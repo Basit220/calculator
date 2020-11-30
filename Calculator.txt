@@ -1,0 +1,318 @@
+  1: //Calculator.java
+  2: 
+  3: import java.util.Scanner;
+  4: 
+  5: /**
+  6:  * Simple line-oriented calculator program. The class
+  7:  * can also be used to create other calculator programs.
+  8:  */
+  9: public class Calculator
+ 10: {
+ 11:     private double result;
+ 12:     private double precision = 0.0001;
+ 13:     //Numbers this close to zero are treated as if equal to zero.
+ 14: 
+ 15:     public static void main(String[] args)
+ 16:     {
+ 17:         Calculator clerk = new Calculator();
+ 18:         try
+ 19:         {
+ 20:             System.out.println("Calculator is on.");
+ 21:             System.out.print("Format of each line: ");
+ 22:             System.out.println("operator space number");
+ 23:             System.out.println("For example: + 3");
+ 24:             System.out.println("To end, enter the letter e.");
+ 25:             clerk.doCalculation();
+ 26:         }
+ 27:         catch (UnknownOpException e)
+ 28:         {
+ 29:             clerk.handleUnknownOpException(e);
+ 30:         }
+ 31:         catch (DivideByZeroException e)
+ 32:         {
+ 33:             clerk.handleDivideByZeroException(e);
+ 34:         }
+ 35:         System.out.println("The final result is " + clerk.getResult());
+ 36:         System.out.println("Calculator program ending.");
+ 37:     }
+ 38: 
+ 39:     public Calculator()
+ 40:     {
+ 41:         result = 0;
+ 42:     }
+ 43: 
+ 44:     public void reset()
+ 45:     {
+ 46:         result = 0;
+ 47:     }
+ 48: 
+ 49:     public void setResult
+ 50:     (
+ 51:         double newResult
+ 52:     )
+ 53:     {
+ 54:         result = newResult;
+ 55:     }
+ 56: 
+ 57:     public double getResult()
+ 58:     {
+ 59:         return result;
+ 60:     }
+ 61: 
+ 62:     /**
+ 63:      * The heart of a calculator. This does not give
+ 64:      * instructions. Input errors throw exceptions.
+ 65:      */
+ 66:     public void doCalculation()
+ 67:         throws DivideByZeroException, UnknownOpException
+ 68:     {
+ 69:         Scanner keyboard = new Scanner(System.in);
+ 70: 
+ 71:         boolean done = false;
+ 72:         result = 0;
+ 73:         System.out.println("result = " + result);
+ 74:         while (!done)
+ 75:         {
+ 76:             char nextOp = (keyboard.next()).charAt(0);
+ 77:             if ((nextOp == 'e') || (nextOp == 'E'))
+ 78:                 done = true;
+ 79:             else
+ 80:             {
+ 81:                 double nextNumber = keyboard.nextDouble();
+ 82:                 result = evaluate(nextOp, result, nextNumber);
+ 83:                 System.out.println("result " + nextOp + " "
+ 84:                     + nextNumber + " = " + result);
+ 85:                 System.out.println("updated result = " + result);
+ 86:             }
+ 87:         }
+ 88:     }
+ 89: 
+ 90:     /**
+ 91:      * Returns n1 op n2, provided op is one of '+', '-', '*',or '/'.
+ 92:      * Any other value of op throws UnknownOpException.
+ 93:      */
+ 94:     public double evaluate
+ 95:     (
+ 96:         char op,
+ 97:         double n1,
+ 98:         double n2
+ 99:     ) throws DivideByZeroException, UnknownOpException
+100:     {
+101:         double answer;
+102:         switch (op)
+103:         {
+104:         case '+':
+105:             answer = n1 + n2;
+106:             break;
+107:         case '-':
+108:             answer = n1 - n2;
+109:             break;
+110:         case '*':
+111:             answer = n1 * n2;
+112:             break;
+113:         case '/':
+114:             if ((-precision < n2) && (n2 < precision))
+115:                 throw new DivideByZeroException();
+116:             answer = n1 / n2;
+117:             break;
+118:         default:
+119:             throw new UnknownOpException(op);
+120:         }
+121:         return answer;
+122:     }
+123: 
+124:     public void handleDivideByZeroException
+125:     (
+126:         DivideByZeroException e
+127:     )
+128:     {
+129:         System.out.println("Dividing by zero.");
+130:         System.out.println("Program aborted");
+131:         System.exit(0);
+132:     }
+133: 
+134:     public void handleUnknownOpException
+135:     (
+136:         UnknownOpException e
+137:     )
+138:     {
+139:         System.out.println(e.getMessage());
+140:         System.out.println("Try again from the beginning:");
+141: 
+142:         try
+143:         {
+144:             System.out.print("Format of each line: ");
+145:             System.out.println("operator number");
+146:             System.out.println("For example: + 3");
+147:             System.out.println("To end, enter the letter e.");
+148:             doCalculation();
+149:         }
+150:         catch (UnknownOpException e2)
+151:         {
+152:             System.out.println(e2.getMessage());
+153:             System.out.println("Try again at some other time.");
+154:             System.out.println("Program ending.");
+155:             System.exit(0);
+156:         }
+157:         catch (DivideByZeroException e3)
+158:         {
+159:             handleDivideByZeroException(e3);
+160:         }
+161:     }
+162: }
+
+Program GUI:
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+class calculator extends JFrame
+{
+    JButton add,subtract,multiply,divide;
+    JTextField num1,num2;
+    JLabel result,enter1,enter2;
+    
+    calculator()
+    {
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        
+        
+        enter1 = new JLabel("1st: ");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        
+        add(enter1,c);
+        
+        num1 = new JTextField(10);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.gridwidth = 3;
+        add(num1,c);
+        
+        enter2 = new JLabel("2nd: ");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx=0;
+        c.gridy=1;
+        //c.gridwidth = 1;
+        add(enter2,c);
+        
+        num2 = new JTextField(10);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx=1;
+        c.gridx=1;
+        add(num2,c);    
+        
+        // adding the buttons
+        add = new JButton("+");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx=0;
+        c.gridy=2;
+        c.gridwidth = 1;
+        add(add,c);
+        
+        subtract = new JButton("-");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx=1;
+        c.gridy=2;
+        add(subtract,c);
+        
+        multiply = new JButton("*");
+        c.fill= GridBagConstraints.HORIZONTAL;
+        c.gridx=2;
+        c.gridy=2;
+        add(multiply,c);
+        
+        divide = new JButton("/");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx=3;
+        c.gridy=2;
+        add(divide,c);
+        
+        result = new JLabel("");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx=0;
+        c.gridy=4;
+        c.gridwidth=4;
+        add(result,c);
+        
+        event a = new event();
+        add.addActionListener(a);
+        subtract.addActionListener(a);
+        multiply.addActionListener(a);
+        divide.addActionListener(a);
+    }
+    
+    class event implements ActionListener
+    {
+        public void actionPerformed(ActionEvent a)
+        {
+            double number1,number2;
+            
+            try
+            {
+                number1=Double.parseDouble(num1.getText());             
+            }
+            catch(NumberFormatException e)
+            {
+                result.setText("Illegal data 1st Field");
+                result.setForeground(Color.BLUE);
+                return;
+            }
+            try
+            {
+                number2 = Double.parseDouble(num2.getText());               
+            }
+            catch(NumberFormatException e)
+            {
+                result.setText("Illegal data 2nd Field");
+                result.setForeground(Color.GREEN);
+                return;
+            }
+            String op = a.getActionCommand(); // op for operator
+            
+            
+            if(op.equals("+"))
+            {   
+                double sum = number1+number2;
+                result.setText(number1+"+"+number2+"="+sum);
+                result.setForeground(Color.RED);
+            }
+            if(op.equals("-"))
+            {
+                double diff = number1-number2;
+                result.setText(number1+"-"+number2+"="+diff);
+                result.setForeground(Color.ORANGE);
+            }
+            if(op.equals("*"))
+            {
+                double product = number1*number2;
+                result.setText(number1+"*"+number2+"="+product);
+                result.setForeground(Color.GREEN);
+            }
+            if(op.equals("/"))
+            {
+                if(number2==0)
+                {
+                    result.setText("Cannot divide by zero");
+                    result.setForeground(Color.RED);
+                }
+                else
+                {
+                    double quo = number1/number2;
+                    result.setText(number1+"/"+number2+"="+quo);
+                    result.setForeground(Color.BLUE);                   
+                }
+                }
+            }
+        }
+    public static void main(String args[])
+    {
+        calculator ob = new calculator();
+        ob.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ob.setTitle("Calculator");
+        ob.setVisible(true);
+        ob.setSize(200,200);
+    }
+}
